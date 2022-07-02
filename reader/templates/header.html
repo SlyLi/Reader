@@ -1,0 +1,50 @@
+<header class="p-3 mb-3 border-bottom px-0">
+    <div class="container">
+      <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start ">
+        <div class="dropdown d-block d-lg-none">
+            <a href="#" class="d-flex align-items-center justify-content-start col-lg-4 ms-2 mb-lg-0 link-dark text-decoration-none dropdown-toggle" id="dropdownNavLink" data-bs-toggle="dropdown" aria-expanded="false">
+              菜单
+            </a>
+            <ul class="dropdown-menu text-small shadow " aria-labelledby="dropdownNavLink" >
+              <li><a class="dropdown-item  book-list {% if url_name == 'book_list' %}active{% endif %}" href="{% url 'reader:book_list'%}">书库</a></li>
+              <li><a class="dropdown-item {% if url_name == 'upload_file' %}active{% endif %}" href="{% url 'reader:upload_file'%}">添加</a></li>
+              <li><a class="dropdown-item" href="#">Customers</a></li>
+              <li><a class="dropdown-item" href="#">Products</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="#">Reports</a></li>
+              <li><a class="dropdown-item" href="#">Analytics</a></li>
+            </ul>
+        </div>
+
+        {% with request.resolver_match.url_name as url_name %}
+        <ul class="nav nav-pills col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0 d-none d-lg-flex">
+                <li class="nav-item" ><a href="{% url 'reader:book_list'%}" class="nav-link {% if url_name == 'book_list' %}active{% endif %}">书库</a></li>
+                <li class="nav-item"><a href="{% url 'reader:upload_file'%}" class="nav-link {% if url_name == 'upload_file' %}active{% endif %}">添加</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">阅读记录</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">FAQs</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">About</a></li>
+        </ul>
+        {% endwith %}
+
+        <form class="col-6 col-lg-auto ms-2 me-2 me-lg-3" role="search">
+          <input type="search" class="form-control" placeholder="Search..." aria-label="Search" control-id="ControlID-2">
+        </form>
+
+        <div class="dropdown text-end">
+          <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+            <img  src="https://i0.hdslb.com/bfs/face/member/noface.jpg@240w_240h_1c_1s.webp" alt-src="https://i0.hdslb.com/bfs/face/member/noface.jpg@240w_240h_1c_1s.webp" alt="mdo" width="32" height="32" class="rounded-circle">
+          </a>
+          <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
+            <li><a class="dropdown-item" href="#">New project...</a></li>
+            <li><a class="dropdown-item" href="#">Settings</a></li>
+            <li><a class="dropdown-item" href="#">Profile</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#">Sign out</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </header>
+
+
+  <div class="b-example-divider"></div>

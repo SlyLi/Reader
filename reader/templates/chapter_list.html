@@ -1,0 +1,6 @@
+<ul>
+    {% for c in chapter_list %}
+    <li><a href="{% url 'reader:chapter_detail' c.id %}">{{ c.title }}</a></li>
+
+    {% endfor %}
+</ul>

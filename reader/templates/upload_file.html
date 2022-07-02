@@ -1,0 +1,61 @@
+
+
+
+
+{% extends "base.html" %}
+
+{% block title %}Reader{% endblock %}
+
+{% block content %}
+<main>
+  {% include 'header.html' %}
+
+
+<div class="container">
+ {{notice}}
+    
+    <div id="upload"></div>
+    <!-- {% csrf_token %} -->
+    <!-- <button id="btn2">upload</button> -->
+    
+    {% load static %}
+    <script type="text/javascript" src="{% static 'jquery.Huploadify.js' %}"></script>
+    
+    <script>
+        console.log()
+        var up = $('#upload').Huploadify({
+            auto:true,
+            fileTypeExts:'*.txt',
+            multi:true,
+            formData: {csrfmiddlewaretoken: '{{ csrf_token }}'},
+            progressData:'percentage',
+            fileSizeLimit:50000,
+            showUploadedPercent:true,
+            showUploadedSize:true,
+            removeTimeout:9999999,
+            uploader:"{% url 'reader:upload_file'%}",
+            onUploadStart:function(){
+                console.log('开始上传');
+                },
+            onInit:function(){
+                console.log('初始化');
+                },
+            onUploadComplete:function(){
+                console.log('上传完成');
+                },
+            onCancel:function(file){
+                console.log(file);
+            }
+        });
+        // $('#btn2').click(function(){
+        // 	up.upload('*');
+        // });
+    </script>
+</div>
+</main>
+{% endblock %}
+
+
+{% block body-bottom %}
+
+{% endblock %}

@@ -1,0 +1,376 @@
+
+{% extends "base.html" %}
+
+{% block title %} Reader {% endblock %}
+
+{% block content %}
+
+<main class="vh-100">
+    
+    
+    <div class="d-none d-lg-block">
+        {% include 'header.html' %}
+    </div>
+
+    <div class="center_menu zindex-tooltip position-fixed top-50 start-50 translate-middle" style="width: 30%;height:30%"></div>
+
+    <div class="container">
+        <div class="article-container">
+            <article class="py-2">
+                <h3 class="text-center">{{chapter_title}} </h3> 
+                    {% for line in content_lines %}
+                        <p >{{line}}</p>
+                    {% endfor %}
+                <span id="marker"></span>
+    
+            </article>
+        </div>
+
+        <div class="page-nav d-none d-lg-block">
+            <nav aria-label="Page navigation example w-100">
+                <ul class="pagination  d-lg-flex   justify-content-between">
+                    <div class="d-lg-flex ">
+                        <li class="page-item "><a class="page-link prev-chapter" href="#">上一章</a></li>
+                        <li class="page-item prev-page"><a class="page-link " href="#">上一页</a></li>
+
+                    </div>
+                    
+                    <div class="pages-container d-lg-flex justify-content-center">
+                       
+                    </div>
+
+                    <div class="d-lg-flex ">
+                        <li class="page-item next-page"><a class="page-link" href="#">下一页</a></li>
+                        <li class="page-item float-end"><a class="page-link next-chapter" href="#">下一章</a></li>
+                    </div>
+                </ul>
+            </nav>
+        </div>
+
+        
+    </div>
+    <div class="offcanvas offcanvas-top pb-auto" style="height:fit-content" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvasTop" aria-labelledby="offcanvasTopLabel"> 
+        <nav class="navbar navbar-dark bg-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand m-0 ms-4 chapter_list_btn" href="#">
+                    返回
+                </a>
+                <a class="navbar-brand m-0" href="#">
+                菜单
+                </a>
+                <a class="navbar-brand m-0 me-4" href="#">
+                    设置
+                </a>
+            </div>
+        </nav>
+    </div>
+    <div class="offcanvas offcanvas-start col-12 col-lg-3" data-bs-scroll="false" data-bs-backdrop="false" tabindex="-1" id="offcanvasLeft" aria-labelledby="offcanvasLeftLabel"> 
+        <div class="offcanvas-header">
+            <ul class="nav nav-pills me-1" id="pills-tab" role="tablist">
+                <li class="nav-item" role="presentation">
+                <a class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">目录</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                <a class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">书签</a>
+                </li>
+                
+            </ul>
+            <input class="w-auto">
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body ">  
+            
+            <div class="tab-content" id="pills-tabContent">
+                <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                    <div class="list-group">
+                        {% for c in chapter_list %}
+                        <a class="list-group-item {% if request.resolver_match.kwargs.chapter_pk == c.id %} active {% endif %}" href="{% url 'reader:book_reader' c.book_id c.id %}" method="post">{{ c.title }}</a>
+                        {% endfor %}
+
+                    </div>
+                </div>
+
+                <div class="tab-pane fade text-wrap" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+                    <div class="ul-list">
+                        <div class="list-group-item">
+                            月霜惊喜地跳起来，“师帅！我一定把敌将的首级给师传拿来！”
+
+                            　　王哲脸上露出一丝怜爱，他拂好月霜脸上散乱的发丝，然后道：“你立刻跟他走，以最快的速度回到内陆。但不要去临安，到唐国的长安去。”
+                        </div>
+                    
+                    </div>
+                    
+                </div>
+            </div>
+
+            
+            
+        </div>
+    </div>
+    <div class="offcanvas offcanvas-bottom h-auto col-12 " data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvasBottom" aria-labelledby="offcanvasBottomLabel"> 
+        <div class="col-12 col-lg-6 mx-auto">
+            <div class="container-fluid">
+                <div class="row justify-content-between align-items-center">
+                    <div class="col-2 p-0">
+                        <p class="fs-8 m-0 text-center"><a class="prev-chapter" style="text-decoration: none;color:#333;">上一章</a></p>
+                    </div>
+                    <div class="progress col-8 p-0">
+                        <div class="progress-bar w-50" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <div class="col-2 p-0">
+                        <p class="fs-6 m-0 text-center"><a class="next-chapter" style="text-decoration: none;color:#333;">下一章</a></p>
+                    </div>
+                </div>
+            </div>
+            
+            <nav class="navbar navbar-dark bg-dark">
+                
+                <div class="container-fluid">
+                    <a class="navbar-brand m-0 ms-4 chapter_list_btn" href="#">
+                        目录
+                    </a>
+                    <a class="navbar-brand m-0" href="{% url 'reader:book_list' %}">
+                        返回
+                    </a>
+                    <a class="navbar-brand m-0" href="#">
+                    菜单
+                    </a>
+                    <a class="navbar-brand m-0 me-4" href="#">
+                        设置
+                    </a>
+                </div>
+            </nav>
+        </div>
+        
+    </div>
+</main>
+
+
+    
+{% endblock %}
+
+{% block body-bottom %}
+<script>
+
+    var mobile   = '/Mobile|iP(hone|od|ad)|Android|BlackBerry|IEMobile|Kindle|NetFront|Silk-Accelerated|(hpw|web)OS|Fennec|Minimo|Opera M(obi|ini)|Blazer|Dolfin|Dolphin|Skyfire|Zune/g'
+    var isMobile     = navigator.userAgent.match(mobile)
+    var offcanvasTop = new bootstrap.Offcanvas($('.offcanvas-top'))
+    var offcanvasLeft = new bootstrap.Offcanvas($('.offcanvas-start'))
+    var offcanvasBottom = new bootstrap.Offcanvas($('.offcanvas-bottom'))
+
+    if(localStorage.getItem('offcanvasBottom'))
+    {
+        offcanvasBottom.show()
+    }
+    
+    $('.article-container').click(function(e){
+        if(isMobile)
+        {
+            var menu_w =  $('.center_menu').width()/2
+            var menu_h =  $('.center_menu').height()/2
+            var client_w =  $('.article-container').width()/2
+            var client_h =  $('.article-container').height()/2
+            if((e.clientX > client_w +menu_w)||(e.clientY > client_h+menu_h &&e.clientX > client_w-menu_w))
+            {
+                $('.next-page').click()
+            }
+            else if((e.clientX < client_w - menu_w)||(e.clientY < client_h - menu_h &&e.clientX < client_w + menu_w))
+            {
+                $('.prev-page').click()
+            }
+            else
+            {
+                $('.center_menu').click()
+            }
+        }
+    })
+
+    $('.center_menu').click(function(e){
+        // offcanvasTop.toggle()
+        offcanvasBottom.toggle()
+        if(offcanvasBottom._isShown)
+            localStorage.setItem('offcanvasBottom','ture')
+        else
+            localStorage.removeItem('offcanvasBottom')
+
+        console.log(localStorage.getItem('offcanvasBottom'))
+    })
+
+    $('.chapter_list_btn').click(function(e){  
+        offcanvasBottom.hide()
+        localStorage.removeItem('offcanvasBottom')
+        offcanvasLeft.show() 
+       
+    })
+   
+
+   
+    page_width = $('article').width() + parseInt($('article').css('column-gap'))
+    page_num = parseInt(($('#marker').offset().left - $('article').offset().left)/ page_width +1)
+
+    // console.log(page_width)
+    var page_contents_len = new Array(page_num + 1 ).fill(0);
+    $('article p').each((i,e)=>{
+        page_contents_len[parseInt($(e).offset().left/page_width) + 1]+=$(e).text().length
+    })
+    for(var i =1;i<page_num+1;i++)
+        page_contents_len[i] += page_contents_len[i-1]
+    if(page_num>0)
+    {
+        for(var i=0;i<page_num;i++)
+        {
+            $('.pages-container').prepend($('<li class="page-item page-num"><a class="page-link" href="#">'+ String(page_num-i)+'</a></li>'))   
+        }
+        $('.pages-container').children().first().addClass('active')
+    }
+
+    
+
+    $('.page-item').click(function(e){
+        var cur = $('.page-item.active')
+        var cur_idx = parseInt(cur.text()) -1
+        var all = $('.page-num').length
+        if ($(this).hasClass('prev-page'))
+        {
+            if(cur_idx>0)
+            {
+                
+                cur.prev().addClass('active')
+                cur.removeClass('active')
+                $('article').css('transform',`translateX(-${page_width * (cur_idx - 1 )}px)`)
+                save_record()
+                
+            }
+            else{
+                console.log(cur_idx)
+                $('.page-link.prev-chapter')[0].click()
+                localStorage.setItem('prev-chapter','true')
+            }
+        }
+        else if ($(this).hasClass('next-page'))
+        {
+            if(cur_idx<all-1)
+            {
+                
+                cur.next().addClass('active')
+                cur.removeClass('active')
+                $('article').css('transform',`translateX(-${page_width * (cur_idx +1 )}px)`)
+                save_record()
+            }
+            else
+            {
+                $('.page-link.next-chapter')[0].click()
+            }
+        }
+        else if ($(this).hasClass('page-num'))
+        {
+            cur.removeClass('active')
+            $(this).addClass('active')
+            cur_idx = parseInt($(this).text()) -1 
+            $('article').css('transform',`translateX(-${page_width * cur_idx}px)`)
+            save_record()
+        }
+    })
+
+    function save_record()
+    {
+        $.ajax({
+         url: "{% url 'reader:book_reader' request.resolver_match.kwargs.book_pk request.resolver_match.kwargs.chapter_pk %}", 
+         type: 'post',
+         data: {
+             'words': page_contents_len[parseInt($('.page-item.active').text()) - 1],
+             csrfmiddlewaretoken: '{{ csrf_token }}'
+         },
+         // 上面data为提交数据，下面data形参指代的就是异步提交的返回结果data
+         success: function (data){
+         console.log(data);       
+         }
+     })
+
+    }
+
+
+    {% if last_words %}
+        var words = parseInt({{last_words}})
+        for(var i=0;i<page_num+1;i++)
+        {
+            if(page_contents_len[i]>words)
+            {
+                $('.page-item').each((idx,e)=>{
+                    if(parseInt($(e).text()) == i)
+                        $(e).click()
+                })
+                break
+            }
+        }
+    {% endif %}
+
+    if(localStorage.getItem('prev-chapter'))
+    {
+        $('.pages-container').children().last().click()
+        localStorage.removeItem('prev-chapter')
+        save_record()
+    }
+    else
+    {
+        save_record()
+    }
+    $('.prev-chapter').attr('href',$('.list-group-item.active').prev().attr('href'))
+    $('.next-chapter').attr('href',$('.list-group-item.active').next().attr('href'))
+
+   
+    var startX;
+    var startY;
+    var moveEndX
+    var moveEndY
+    var X
+    var Y
+    var trans
+    var last_page_offset = - parseInt($('#marker').offset().left - $('article').offset().left) 
+    $(".article-container").on("touchstart", function (e) {
+        startX = e.originalEvent.changedTouches[0].pageX,
+        startY = e.originalEvent.changedTouches[0].pageY;
+        if($('article').css('transform') == 'none')
+            trans = 0
+        else
+            trans = parseFloat($('article').css('transform').split(',')[4])
+    });
+
+    $(".article-container").on("touchmove", function (e) {
+        moveEndX = e.originalEvent.changedTouches[0].pageX
+        moveEndY = e.originalEvent.changedTouches[0].pageY
+        X = moveEndX - startX
+        Y = moveEndY - startY
+        $('article').css('transform',`translateX(${trans + X}px)`)
+    });
+
+    $(".article-container").on("touchend",function(e){
+        moveEndX = e.originalEvent.changedTouches[0].pageX
+        moveEndY = e.originalEvent.changedTouches[0].pageY
+        X = moveEndX - startX
+        Y = moveEndY - startY
+
+        console.log(parseFloat($('article').css('transform').split(',')[4]))
+        console.log(last_page_offset)
+        if(parseFloat($('article').css('transform').split(',')[4]) > 0)
+            $('article').css('transform',`translateX(0px)`)
+        else if(parseFloat($('article').css('transform').split(',')[4]) < last_page_offset)
+        {
+            $('article').css('transform',`translateX(${last_page_offset}px)`)
+        }
+        
+        if (X < 0) {
+            $('.next-page').click()
+        }
+        else if (X > 0) {
+            $('.prev-page').click()
+        }
+    
+    })
+
+    
+
+
+</script>
+{% endblock %}
+
