@@ -13,5 +13,6 @@ urlpatterns = [
     path('chapter_detail/<int:pk>', views.ChapterDetailView.as_view(), name='chapter_detail'),
     path('book_temp/<int:pk>', views.book, name='book'),
     path('book/<int:book_pk>/<int:chapter_pk>', views.book_reader, name='book_reader'),
+    path('login', views.login, name='login'),
 
 ]

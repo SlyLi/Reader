@@ -81,3 +81,11 @@ def book_reader(request,book_pk,chapter_pk):
 
     
     return render(request, 'book_reader.html', {'chapter_list': chapter_list,'chapter_title':content_lines[0],'content_lines':content_lines[1:]})
+
+def login(request):
+    if request.method == "POST":
+        username = request.POST['username']
+        password = request.POST['password']
+        print(username,password)    
+
+    return HttpResponse('success')  
