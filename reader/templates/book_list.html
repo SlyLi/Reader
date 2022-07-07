@@ -18,18 +18,12 @@
       <div class="col-4 col-lg-2" >
         <a href="{% url 'reader:book' book.id %}" style="text-decoration: none;color:#333;">
         <!-- <div onclick="window.location.href= '{% url 'reader:book_reader' book.id book.first_chapter %}' ;return false"> -->
-          <div class="card mb-4 box-shadow" style="background-image: url({% static 'images/cover.webp' %});">
-            <!-- <img class="book-img card-img-top " data-src="" alt="Smiley face"   title="点击显示详情" src="1" data-holder-rendered="true"> -->
-            <div class="book-img card-img-top d-flex justify-content-center">
-                <!-- <div class="bg-warning">
-                    TXT
-                </div> -->
-                <div class="text-center text-wrap w-100 h-100 overflow-hidden mt-4">
+          <div class="card mb-4 border-0" >
+            <img src="{% static 'images/1.jpg' %}" class="w-100 h-100 mb-0 me-0"> 
+            <div class="text-break w-100 overflow-hidden mt-4 book-tittle">
                   {{ book.title }}
                  
                 </div>
-    
-            </div>
             <!-- <div class="card-body">
               <p class="card-text">花嫁</p>
             </div> -->

@@ -143,6 +143,26 @@
         </div>
         
     </div>
+
+
+    <div class="d-none d-lg-block" style="right: 20px; bottom:20px;position: fixed;">
+        
+        <ul class="nav nav-pills nav-flush flex-column mb-auto text-center" style="font-size: 20px;">
+            
+            <li class="nav-item">
+                <a href="#" class="nav-link  px-2 py-1 active border-bottom chapter_list_btn" aria-current="page" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Home">
+                    <i class="bi bi-list"></i>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link  px-2 py-1 active border-bottom" aria-current="page" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Home">
+                    <i class="bi-alarm"></i>
+                </a>
+            </li>
+          </ul>
+
+    </div>
+
 </main>
 
 
@@ -158,14 +178,13 @@
     var offcanvasLeft = new bootstrap.Offcanvas($('.offcanvas-start'))
     var offcanvasBottom = new bootstrap.Offcanvas($('.offcanvas-bottom'))
 
-    if(localStorage.getItem('offcanvasBottom'))
+    if (isMobile)
     {
-        offcanvasBottom.show()
-    }
-    
-    $('.article-container').click(function(e){
-        if(isMobile)
+        if(localStorage.getItem('offcanvasBottom'))
         {
+            offcanvasBottom.show()
+        }
+        $('.article-container').click(function(e){
             var menu_w =  $('.center_menu').width()/2
             var menu_h =  $('.center_menu').height()/2
             var client_w =  $('.article-container').width()/2
@@ -182,27 +201,98 @@
             {
                 $('.center_menu').click()
             }
-        }
-    })
+        })
 
-    $('.center_menu').click(function(e){
+        $('.center_menu').click(function(e){
         // offcanvasTop.toggle()
-        offcanvasBottom.toggle()
-        if(offcanvasBottom._isShown)
-            localStorage.setItem('offcanvasBottom','ture')
-        else
+            offcanvasBottom.toggle()
+            if(offcanvasBottom._isShown)
+                localStorage.setItem('offcanvasBottom','ture')
+            else
+                localStorage.removeItem('offcanvasBottom')
+
+            console.log(localStorage.getItem('offcanvasBottom'))
+        })
+
+        $('.chapter_list_btn').click(function(e){  
+            offcanvasBottom.hide()
             localStorage.removeItem('offcanvasBottom')
+            offcanvasLeft.show() 
+        
+        })
 
-        console.log(localStorage.getItem('offcanvasBottom'))
-    })
+        var startX;
+        var startY;
+        var moveEndX
+        var moveEndY
+        var X
+        var Y
+        var trans
+        var last_page_offset = - parseInt($('#marker').offset().left - $('article').offset().left) 
+        $(".article-container").on("touchstart", function (e) {
+            startX = e.originalEvent.changedTouches[0].pageX,
+            startY = e.originalEvent.changedTouches[0].pageY;
+            if($('article').css('transform') == 'none')
+                trans = 0
+            else
+                trans = parseFloat($('article').css('transform').split(',')[4])
+        });
 
-    $('.chapter_list_btn').click(function(e){  
-        offcanvasBottom.hide()
-        localStorage.removeItem('offcanvasBottom')
-        offcanvasLeft.show() 
-       
-    })
-   
+        $(".article-container").on("touchmove", function (e) {
+            moveEndX = e.originalEvent.changedTouches[0].pageX
+            moveEndY = e.originalEvent.changedTouches[0].pageY
+            X = moveEndX - startX
+            Y = moveEndY - startY
+            $('article').css('transform',`translateX(${trans + X}px)`)
+        });
+
+        $(".article-container").on("touchend",function(e){
+            moveEndX = e.originalEvent.changedTouches[0].pageX
+            moveEndY = e.originalEvent.changedTouches[0].pageY
+            X = moveEndX - startX
+            Y = moveEndY - startY
+
+            console.log(parseFloat($('article').css('transform').split(',')[4]))
+            console.log(last_page_offset)
+            if(parseFloat($('article').css('transform').split(',')[4]) > 0)
+                $('article').css('transform',`translateX(0px)`)
+            else if(parseFloat($('article').css('transform').split(',')[4]) < last_page_offset)
+            {
+                $('article').css('transform',`translateX(${last_page_offset}px)`)
+            }
+            
+            if (X < 0) {
+                $('.next-page').click()
+            }
+            else if (X > 0) {
+                $('.prev-page').click()
+            }
+        
+        })
+
+    }
+    else
+    {
+        $('.chapter_list_btn').click(function(e){  
+            offcanvasLeft.toggle() 
+        })
+        document.onkeydown=function(e){    //对整个页面监听  
+            var keyNum=window.event ? e.keyCode :e.which;       //获取被按下的键值  
+            if(keyNum==37){  //left
+                $('.prev-page').click()
+            }  
+            if(keyNum==38){  //up
+                $('.page-link.prev-chapter')[0].click()
+            }  
+            if(keyNum==39 | keyNum == 32){  //right space
+                $('.next-page').click()
+            } 
+            if(keyNum==40){  //down
+                $('.page-link.next-chapter')[0].click()
+            } 
+        } 
+    }
+
 
    
     page_width = $('article').width() + parseInt($('article').css('column-gap'))
@@ -319,57 +409,6 @@
     $('.next-chapter').attr('href',$('.list-group-item.active').next().attr('href'))
 
    
-    var startX;
-    var startY;
-    var moveEndX
-    var moveEndY
-    var X
-    var Y
-    var trans
-    var last_page_offset = - parseInt($('#marker').offset().left - $('article').offset().left) 
-    $(".article-container").on("touchstart", function (e) {
-        startX = e.originalEvent.changedTouches[0].pageX,
-        startY = e.originalEvent.changedTouches[0].pageY;
-        if($('article').css('transform') == 'none')
-            trans = 0
-        else
-            trans = parseFloat($('article').css('transform').split(',')[4])
-    });
-
-    $(".article-container").on("touchmove", function (e) {
-        moveEndX = e.originalEvent.changedTouches[0].pageX
-        moveEndY = e.originalEvent.changedTouches[0].pageY
-        X = moveEndX - startX
-        Y = moveEndY - startY
-        $('article').css('transform',`translateX(${trans + X}px)`)
-    });
-
-    $(".article-container").on("touchend",function(e){
-        moveEndX = e.originalEvent.changedTouches[0].pageX
-        moveEndY = e.originalEvent.changedTouches[0].pageY
-        X = moveEndX - startX
-        Y = moveEndY - startY
-
-        console.log(parseFloat($('article').css('transform').split(',')[4]))
-        console.log(last_page_offset)
-        if(parseFloat($('article').css('transform').split(',')[4]) > 0)
-            $('article').css('transform',`translateX(0px)`)
-        else if(parseFloat($('article').css('transform').split(',')[4]) < last_page_offset)
-        {
-            $('article').css('transform',`translateX(${last_page_offset}px)`)
-        }
-        
-        if (X < 0) {
-            $('.next-page').click()
-        }
-        else if (X > 0) {
-            $('.prev-page').click()
-        }
-    
-    })
-
-    
-
 
 </script>
 {% endblock %}

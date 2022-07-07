@@ -1,7 +1,12 @@
-.book-img{
-    height: 170px; 
-    width: 100%; 
-    display: block;
+
+.book-tittle{
+    overflow:hidden;
+	text-overflow:ellipsis;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-box-pack: center;
+	-webkit-box-align: center;
+	-webkit-line-clamp:3;
 }
 
 
@@ -16,16 +21,13 @@ article{
     overflow-x: hidden;
 }
 
+.desktop-only-fixed{
+	display: none;
+}
 
 
 
 @media  screen and  (min-width: 992px) {
-
-.book-img{
-    height: 270px; 
-    width: 100%; 
-    display: block;
-}
 
 article{
     columns: calc(100vw - 32px) 1;
@@ -33,7 +35,9 @@ article{
     height: calc(100vh - 143px );
     transition: 0s;
 }
-
+.desktop-only-fixed{
+	position: fixed;
+}
 
 }
 

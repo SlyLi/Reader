@@ -5,6 +5,7 @@ from .models import *
 from django.views import generic
 from django.shortcuts import get_object_or_404, redirect, render
 import json
+from django.contrib.auth import authenticate,login,logout
 
 
 def upload_file(request):
@@ -26,6 +27,13 @@ class BookListView(generic.ListView):
         """Return the last five published questions."""
         return Book.objects.all()
 
+class BookAdminView(generic.ListView):
+    template_name = 'book_admin.html'
+    context_object_name = 'book_list'
+
+    def get_queryset(self):
+        """Return the last five published questions."""
+        return Book.objects.all()
 
 class ChapterListView(generic.ListView):
     template_name = 'chapter_list.html'
@@ -82,10 +90,31 @@ def book_reader(request,book_pk,chapter_pk):
     
     return render(request, 'book_reader.html', {'chapter_list': chapter_list,'chapter_title':content_lines[0],'content_lines':content_lines[1:]})
 
-def login(request):
-    if request.method == "POST":
+def login_auth(request):
+    if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
-        print(username,password)    
+        user = authenticate(username=username, password=password)
+        print(user)
+        if user is not None:
+            login(request, user)
+            return HttpResponse('success')  
+        else:
+            return HttpResponse('请输出正确的用户名或密码')  
 
-    return HttpResponse('success')  
+    return HttpResponse('fk off')  
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('reader:book_list')
+    # Redirect to a success page.
+
+def book_del(request,pk):
+    chapter_list = Chapter.objects.filter(book_id = pk)
+    for i in chapter_list:
+        Content.objects.filter(id=i.content_id).delete()
+    chapter_list.delete()
+    UserBookRecord.objects.filter(book_id = pk).delete()
+    Book.objects.filter(id = pk).delete()
+    return redirect('reader:book_admin')
