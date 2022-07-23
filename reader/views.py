@@ -118,3 +118,15 @@ def book_del(request,pk):
     UserBookRecord.objects.filter(book_id = pk).delete()
     Book.objects.filter(id = pk).delete()
     return redirect('reader:book_admin')
+
+
+def keyword_search(request,book_pk,chapter_pk,kwd):
+    chapter_list = Chapter.objects.filter(book_id = book_pk)
+    lines = []
+    for chapter in chapter_list:
+        con = get_object_or_404(Content,pk = chapter.content_id)
+        content_lines = con.content.split('\n')
+        for cont in content_lines:
+            if cont.find(kwd) != -1:
+                lines.append(cont)
+    return render(request, 'search.html', {'list': lines})

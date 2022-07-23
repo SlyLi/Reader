@@ -17,4 +17,6 @@ urlpatterns = [
     path('login', views.login_auth, name='login'),
     path('logout', views.logout_view, name='logout'),
     path('book_del/<int:pk>', views.book_del, name='book_del'),
+    path('search/<int:book_pk>/<int:chapter_pk>/<str:kwd>', views.keyword_search, name='keyword_search'),
+
 ]

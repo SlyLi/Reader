@@ -156,7 +156,7 @@
             </li>
             <li class="nav-item">
                 <a href="#" class="nav-link  px-2 py-1 active border-bottom" aria-current="page" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Home">
-                    <i class="bi-alarm"></i>
+                    <i class="bi bi-gear"></i>
                 </a>
             </li>
           </ul>
@@ -170,243 +170,247 @@
 {% endblock %}
 
 {% block body-bottom %}
+
+{% load static %}
+
 <script>
+var mobile   = '/Mobile|iP(hone|od|ad)|Android|BlackBerry|IEMobile|Kindle|NetFront|Silk-Accelerated|(hpw|web)OS|Fennec|Minimo|Opera M(obi|ini)|Blazer|Dolfin|Dolphin|Skyfire|Zune/g'
+var isMobile     = navigator.userAgent.match(mobile)
+var offcanvasTop = new bootstrap.Offcanvas($('.offcanvas-top'))
+var offcanvasLeft = new bootstrap.Offcanvas($('.offcanvas-start'))
+var offcanvasBottom = new bootstrap.Offcanvas($('.offcanvas-bottom'))
 
-    var mobile   = '/Mobile|iP(hone|od|ad)|Android|BlackBerry|IEMobile|Kindle|NetFront|Silk-Accelerated|(hpw|web)OS|Fennec|Minimo|Opera M(obi|ini)|Blazer|Dolfin|Dolphin|Skyfire|Zune/g'
-    var isMobile     = navigator.userAgent.match(mobile)
-    var offcanvasTop = new bootstrap.Offcanvas($('.offcanvas-top'))
-    var offcanvasLeft = new bootstrap.Offcanvas($('.offcanvas-start'))
-    var offcanvasBottom = new bootstrap.Offcanvas($('.offcanvas-bottom'))
-
-    if (isMobile)
+if (isMobile)
+{
+    if(localStorage.getItem('offcanvasBottom'))
     {
-        if(localStorage.getItem('offcanvasBottom'))
+        offcanvasBottom.show()
+    }
+    $('.article-container').click(function(e){
+        var menu_w =  $('.center_menu').width()/2
+        var menu_h =  $('.center_menu').height()/2
+        var client_w =  $('.article-container').width()/2
+        var client_h =  $('.article-container').height()/2
+        if((e.clientX > client_w +menu_w)||(e.clientY > client_h+menu_h &&e.clientX > client_w-menu_w))
         {
-            offcanvasBottom.show()
+            $('.next-page').click()
         }
-        $('.article-container').click(function(e){
-            var menu_w =  $('.center_menu').width()/2
-            var menu_h =  $('.center_menu').height()/2
-            var client_w =  $('.article-container').width()/2
-            var client_h =  $('.article-container').height()/2
-            if((e.clientX > client_w +menu_w)||(e.clientY > client_h+menu_h &&e.clientX > client_w-menu_w))
-            {
-                $('.next-page').click()
-            }
-            else if((e.clientX < client_w - menu_w)||(e.clientY < client_h - menu_h &&e.clientX < client_w + menu_w))
-            {
-                $('.prev-page').click()
-            }
-            else
-            {
-                $('.center_menu').click()
-            }
-        })
-
-        $('.center_menu').click(function(e){
-        // offcanvasTop.toggle()
-            offcanvasBottom.toggle()
-            if(offcanvasBottom._isShown)
-                localStorage.setItem('offcanvasBottom','ture')
-            else
-                localStorage.removeItem('offcanvasBottom')
-
-            console.log(localStorage.getItem('offcanvasBottom'))
-        })
-
-        $('.chapter_list_btn').click(function(e){  
-            offcanvasBottom.hide()
-            localStorage.removeItem('offcanvasBottom')
-            offcanvasLeft.show() 
-        
-        })
-
-        var startX;
-        var startY;
-        var moveEndX
-        var moveEndY
-        var X
-        var Y
-        var trans
-        var last_page_offset = - parseInt($('#marker').offset().left - $('article').offset().left) 
-        $(".article-container").on("touchstart", function (e) {
-            startX = e.originalEvent.changedTouches[0].pageX,
-            startY = e.originalEvent.changedTouches[0].pageY;
-            if($('article').css('transform') == 'none')
-                trans = 0
-            else
-                trans = parseFloat($('article').css('transform').split(',')[4])
-        });
-
-        $(".article-container").on("touchmove", function (e) {
-            moveEndX = e.originalEvent.changedTouches[0].pageX
-            moveEndY = e.originalEvent.changedTouches[0].pageY
-            X = moveEndX - startX
-            Y = moveEndY - startY
-            $('article').css('transform',`translateX(${trans + X}px)`)
-        });
-
-        $(".article-container").on("touchend",function(e){
-            moveEndX = e.originalEvent.changedTouches[0].pageX
-            moveEndY = e.originalEvent.changedTouches[0].pageY
-            X = moveEndX - startX
-            Y = moveEndY - startY
-
-            console.log(parseFloat($('article').css('transform').split(',')[4]))
-            console.log(last_page_offset)
-            if(parseFloat($('article').css('transform').split(',')[4]) > 0)
-                $('article').css('transform',`translateX(0px)`)
-            else if(parseFloat($('article').css('transform').split(',')[4]) < last_page_offset)
-            {
-                $('article').css('transform',`translateX(${last_page_offset}px)`)
-            }
-            
-            if (X < 0) {
-                $('.next-page').click()
-            }
-            else if (X > 0) {
-                $('.prev-page').click()
-            }
-        
-        })
-
-    }
-    else
-    {
-        $('.chapter_list_btn').click(function(e){  
-            offcanvasLeft.toggle() 
-        })
-        document.onkeydown=function(e){    //对整个页面监听  
-            var keyNum=window.event ? e.keyCode :e.which;       //获取被按下的键值  
-            if(keyNum==37){  //left
-                $('.prev-page').click()
-            }  
-            if(keyNum==38){  //up
-                $('.page-link.prev-chapter')[0].click()
-            }  
-            if(keyNum==39 | keyNum == 32){  //right space
-                $('.next-page').click()
-            } 
-            if(keyNum==40){  //down
-                $('.page-link.next-chapter')[0].click()
-            } 
-        } 
-    }
-
-
-   
-    page_width = $('article').width() + parseInt($('article').css('column-gap'))
-    page_num = parseInt(($('#marker').offset().left - $('article').offset().left)/ page_width +1)
-
-    // console.log(page_width)
-    var page_contents_len = new Array(page_num + 1 ).fill(0);
-    $('article p').each((i,e)=>{
-        page_contents_len[parseInt($(e).offset().left/page_width) + 1]+=$(e).text().length
+        else if((e.clientX < client_w - menu_w)||(e.clientY < client_h - menu_h &&e.clientX < client_w + menu_w))
+        {
+            $('.prev-page').click()
+        }
+        else
+        {
+            $('.center_menu').click()
+        }
     })
-    for(var i =1;i<page_num+1;i++)
-        page_contents_len[i] += page_contents_len[i-1]
-    if(page_num>0)
-    {
-        for(var i=0;i<page_num;i++)
-        {
-            $('.pages-container').prepend($('<li class="page-item page-num"><a class="page-link" href="#">'+ String(page_num-i)+'</a></li>'))   
-        }
-        $('.pages-container').children().first().addClass('active')
-    }
 
+    $('.center_menu').click(function(e){
+    // offcanvasTop.toggle()
+        offcanvasBottom.toggle()
+        if(offcanvasBottom._isShown)
+            localStorage.setItem('offcanvasBottom','ture')
+        else
+            localStorage.removeItem('offcanvasBottom')
+
+        console.log(localStorage.getItem('offcanvasBottom'))
+    })
+
+    $('.chapter_list_btn').click(function(e){  
+        offcanvasBottom.hide()
+        localStorage.removeItem('offcanvasBottom')
+        offcanvasLeft.show() 
     
+    })
 
-    $('.page-item').click(function(e){
-        var cur = $('.page-item.active')
-        var cur_idx = parseInt(cur.text()) -1
-        var all = $('.page-num').length
-        if ($(this).hasClass('prev-page'))
+    var startX;
+    var startY;
+    var moveEndX
+    var moveEndY
+    var X
+    var Y
+    var trans
+    var last_page_offset = - parseInt($('#marker').offset().left - $('article').offset().left) 
+    $(".article-container").on("touchstart", function (e) {
+        startX = e.originalEvent.changedTouches[0].pageX,
+        startY = e.originalEvent.changedTouches[0].pageY;
+        if($('article').css('transform') == 'none')
+            trans = 0
+        else
+            trans = parseFloat($('article').css('transform').split(',')[4])
+    });
+
+    $(".article-container").on("touchmove", function (e) {
+        moveEndX = e.originalEvent.changedTouches[0].pageX
+        moveEndY = e.originalEvent.changedTouches[0].pageY
+        X = moveEndX - startX
+        Y = moveEndY - startY
+        $('article').css('transform',`translateX(${trans + X}px)`)
+    });
+
+    $(".article-container").on("touchend",function(e){
+        moveEndX = e.originalEvent.changedTouches[0].pageX
+        moveEndY = e.originalEvent.changedTouches[0].pageY
+        X = moveEndX - startX
+        Y = moveEndY - startY
+
+        console.log(parseFloat($('article').css('transform').split(',')[4]))
+        console.log(last_page_offset)
+        if(parseFloat($('article').css('transform').split(',')[4]) > 0)
+            $('article').css('transform',`translateX(0px)`)
+        else if(parseFloat($('article').css('transform').split(',')[4]) < last_page_offset)
         {
-            if(cur_idx>0)
-            {
-                
-                cur.prev().addClass('active')
-                cur.removeClass('active')
-                $('article').css('transform',`translateX(-${page_width * (cur_idx - 1 )}px)`)
-                save_record()
-                
-            }
-            else{
-                console.log(cur_idx)
-                $('.page-link.prev-chapter')[0].click()
-                localStorage.setItem('prev-chapter','true')
-            }
+            $('article').css('transform',`translateX(${last_page_offset}px)`)
         }
-        else if ($(this).hasClass('next-page'))
-        {
-            if(cur_idx<all-1)
-            {
-                
-                cur.next().addClass('active')
-                cur.removeClass('active')
-                $('article').css('transform',`translateX(-${page_width * (cur_idx +1 )}px)`)
-                save_record()
-            }
-            else
-            {
-                $('.page-link.next-chapter')[0].click()
-            }
+        
+        if (X < 0) {
+            $('.next-page').click()
         }
-        else if ($(this).hasClass('page-num'))
+        else if (X > 0) {
+            $('.prev-page').click()
+        }
+    
+    })
+
+}
+else
+{
+    $('.chapter_list_btn').click(function(e){  
+        offcanvasLeft.toggle() 
+    })
+    document.onkeydown=function(e){    //对整个页面监听  
+        var keyNum=window.event ? e.keyCode :e.which;       //获取被按下的键值  
+        if(keyNum==37){  //left
+            $('.prev-page').click()
+        }  
+        if(keyNum==38){  //up
+            $('.page-link.prev-chapter')[0].click()
+        }  
+        if(keyNum==39 | keyNum == 32){  //right space
+            $('.next-page').click()
+        } 
+        if(keyNum==40){  //down
+            $('.page-link.next-chapter')[0].click()
+        } 
+    } 
+}
+
+
+page_width = $('article').width() + parseInt($('article').css('column-gap'))
+page_num = parseInt(($('#marker').offset().left - $('article').offset().left)/ page_width +1)
+
+// console.log(page_width)
+var page_contents_len = new Array(page_num + 1 ).fill(0);
+$('article p').each((i,e)=>{
+    page_contents_len[parseInt($(e).offset().left/page_width) + 1]+=$(e).text().length
+})
+for(var i =1;i<page_num+1;i++)
+    page_contents_len[i] += page_contents_len[i-1]
+if(page_num>0)
+{
+    for(var i=0;i<page_num;i++)
+    {
+        $('.pages-container').prepend($('<li class="page-item page-num"><a class="page-link" href="#">'+ String(page_num-i)+'</a></li>'))   
+    }
+    $('.pages-container').children().first().addClass('active')
+}
+
+
+
+$('.prev-chapter').attr('href',$('.list-group-item.active').prev().attr('href'))
+$('.next-chapter').attr('href',$('.list-group-item.active').next().attr('href'))
+
+
+
+$('.page-item').click(function(e){
+    var cur = $('.page-item.active')
+    var cur_idx = parseInt(cur.text()) -1
+    var all = $('.page-num').length
+    if ($(this).hasClass('prev-page'))
+    {
+        if(cur_idx>0)
         {
+            
+            cur.prev().addClass('active')
             cur.removeClass('active')
-            $(this).addClass('active')
-            cur_idx = parseInt($(this).text()) -1 
-            $('article').css('transform',`translateX(-${page_width * cur_idx}px)`)
+            $('article').css('transform',`translateX(-${page_width * (cur_idx - 1 )}px)`)
+            save_record()
+            
+        }
+        else{
+            console.log(cur_idx)
+            $('.page-link.prev-chapter')[0].click()
+            localStorage.setItem('prev-chapter','true')
+        }
+    }
+    else if ($(this).hasClass('next-page'))
+    {
+        if(cur_idx<all-1)
+        {
+            
+            cur.next().addClass('active')
+            cur.removeClass('active')
+            $('article').css('transform',`translateX(-${page_width * (cur_idx +1 )}px)`)
             save_record()
         }
-    })
-
-    function save_record()
-    {
-        $.ajax({
-         url: "{% url 'reader:book_reader' request.resolver_match.kwargs.book_pk request.resolver_match.kwargs.chapter_pk %}", 
-         type: 'post',
-         data: {
-             'words': page_contents_len[parseInt($('.page-item.active').text()) - 1],
-             csrfmiddlewaretoken: '{{ csrf_token }}'
-         },
-         // 上面data为提交数据，下面data形参指代的就是异步提交的返回结果data
-         success: function (data){
-         console.log(data);       
-         }
-     })
-
-    }
-
-
-    {% if last_words %}
-        var words = parseInt({{last_words}})
-        for(var i=0;i<page_num+1;i++)
+        else
         {
-            if(page_contents_len[i]>words)
-            {
-                $('.page-item').each((idx,e)=>{
-                    if(parseInt($(e).text()) == i)
-                        $(e).click()
-                })
-                break
-            }
+            $('.page-link.next-chapter')[0].click()
         }
-    {% endif %}
+    }
+    else if ($(this).hasClass('page-num'))
+    {
+        cur.removeClass('active')
+        $(this).addClass('active')
+        cur_idx = parseInt($(this).text()) -1 
+        $('article').css('transform',`translateX(-${page_width * cur_idx}px)`)
+        save_record()
+    }
+})
 
-    if(localStorage.getItem('prev-chapter'))
+function save_record()
+{
+    $.ajax({
+     url: "{% url 'reader:book_reader' request.resolver_match.kwargs.book_pk request.resolver_match.kwargs.chapter_pk %}", 
+     type: 'post',
+     data: {
+         'words': page_contents_len[parseInt($('.page-item.active').text()) - 1],
+         csrfmiddlewaretoken: '{{ csrf_token }}'
+     },
+     // 上面data为提交数据，下面data形参指代的就是异步提交的返回结果data
+     success: function (data){
+     console.log(data);       
+     }
+ })
+
+}
+
+
+if(localStorage.getItem('prev-chapter'))
+{
+    $('.pages-container').children().last().click()
+    localStorage.removeItem('prev-chapter')
+    save_record()
+}
+else
+{
+    save_record()
+}
+
+{% if last_words %}
+    var words = parseInt({{last_words}})
+    for(var i=0;i<page_num+1;i++)
     {
-        $('.pages-container').children().last().click()
-        localStorage.removeItem('prev-chapter')
-        save_record()
+        if(page_contents_len[i]>words)
+        {
+            $('.page-item').each((idx,e)=>{
+                if(parseInt($(e).text()) == i)
+                    $(e).click()
+            })
+            break
+        }
     }
-    else
-    {
-        save_record()
-    }
-    $('.prev-chapter').attr('href',$('.list-group-item.active').prev().attr('href'))
-    $('.next-chapter').attr('href',$('.list-group-item.active').next().attr('href'))
+{% endif %}
 
    
 
