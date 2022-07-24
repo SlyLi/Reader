@@ -53,6 +53,7 @@
         <nav class="navbar navbar-dark bg-dark">
             <div class="container-fluid">
                 <a class="navbar-brand m-0 ms-4 chapter_list_btn" href="#">
+                    
                     返回
                 </a>
                 <a class="navbar-brand m-0" href="#">
@@ -122,24 +123,54 @@
                     </div>
                 </div>
             </div>
+            <ul class="nav nav-fill justify-content-center bg-dark   ">
+                <li class="nav-item">
+                <a class="nav-link active p-0 py-2 chapter_list_btn" aria-current="page" href="#" style="color: #fff;">
+                    <i class="bi bi-list d-block mob-icon" style="transform: scale(1.2);" ></i>
+                        <span class="mob-icon-text">目录</span>
+                </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active p-0 py-2" aria-current="page" href="#" style="color: #fff;">
+                        <i class="bi bi-app-indicator d-block mob-icon"></i>
+                        <span class="mob-icon-text">菜单</span>                    
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active p-0 py-2" href="{% url 'reader:book_list' %}" aria-current="page" style="color: #fff;">
+                        <i class="bi bi-arrow-up-left-square d-block mob-icon" ></i>
+                        <span class="mob-icon-text">返回</span>                    
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active p-0 py-2" aria-current="page" href="#" style="color: #fff;">
+                        <i class="bi bi bi-gear-wide-connected d-block mob-icon"></i>
+                        <span class="mob-icon-text">设置</span>                    
+                    </a>
+                </li>
+            </ul>
             
-            <nav class="navbar navbar-dark bg-dark">
-                
-                <div class="container-fluid">
-                    <a class="navbar-brand m-0 ms-4 chapter_list_btn" href="#">
-                        目录
+            <!-- <nav class="navbar navbar-dark bg-dark">
+                <div  style="display:inline-flex;">
+                    <a class="navbar-brand chapter_list_btn  m-0 p-0" href="#" style="display:inline-block;">
+                        <i class="bi bi-list d-block " style="width: 2rem;height: 2rem; margin: 0 auto;font-size: 2rem;"></i>
+                        <span style="font-size: 0.6rem;">目录</span>
                     </a>
-                    <a class="navbar-brand m-0" href="{% url 'reader:book_list' %}">
-                        返回
+                    <a class="navbar-brand chapter_list_btn " href="{% url 'reader:book_list' %}" style="display:inline-block;">
+                        <i class="bi bi-list d-block " style="width: 2rem;height: 2rem; margin: 0 auto;font-size: 2rem;"></i>
+                        <span style="font-size: 0.6rem;">返回</span>
                     </a>
-                    <a class="navbar-brand m-0" href="#">
-                    菜单
+                    <a class="navbar-brand chapter_list_btn l" href="#" style="display:inline-block;">
+                        <i class="bi bi-list d-block " style="width: 2rem;height: 2rem; margin: 0 auto;font-size: 2rem;"></i>
+                        <span style="font-size: 0.6rem;">菜单</span>
                     </a>
-                    <a class="navbar-brand m-0 me-4" href="#">
-                        设置
+                    <a class="navbar-brand chapter_list_btnl" href="#" style="display:inline-block;">
+                        <i class="bi bi-list d-block " style="width: 2rem;height: 2rem; margin: 0 auto;font-size: 2rem;"></i>
+                        <span style="font-size: 0.6rem;">设置</span>
                     </a>
+                   
                 </div>
-            </nav>
+            </nav> -->
         </div>
         
     </div>
@@ -162,7 +193,27 @@
           </ul>
 
     </div>
-
+    <!-- Scrollable modal -->
+    <div class="modal myModal">
+    <div class="modal-dialog modal-dialog-scrollable modal-xl modal-fullscreen-lg-down	">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">搜索结果</h5>
+                <div style="margin: -0.5rem -0.5rem -0.5rem auto;">
+                    <form class="col-6 col-lg-auto ms-2 me-2 me-lg-3" role="search" onsubmit="return false;">
+                        <input type="search" class="form-control content-serarch" placeholder="搜索..." aria-label="Search" control-id="ControlID-2">
+                    </form>
+                </div>
+              
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="margin: -0.5rem -0.5rem -0.5rem 0.5rem;"></button>
+            </div>
+            <div class="modal-body search-res">
+              <p>Modal body text goes here.</p>
+            </div>
+            
+          </div>
+    </div>
+</div>
 </main>
 
 
@@ -412,6 +463,29 @@ else
     }
 {% endif %}
 
+var modal = new bootstrap.Modal($(".myModal")) // Returns a Bootstrap modal instance\
+$('.content-serarch').bind("search", function() {
+    // console.log($('.content-serarch').val())
+    // console.log($(this).val())
+    $.ajax({
+     url: "{% url 'reader:book_reader' request.resolver_match.kwargs.book_pk request.resolver_match.kwargs.chapter_pk %}", 
+     type: 'post',
+     data: {
+         'kwd': $(this).val(),
+         csrfmiddlewaretoken: '{{ csrf_token }}'
+     },
+     // 上面data为提交数据，下面data形参指代的就是异步提交的返回结果data
+     success: function (data){
+        $('.search-res').html(data)
+        // console.log($('.search-res .active'))
+        if($('.search-res .active')[0])
+            $('.search-res').scrollTop($('.search-res .active').offset().top)
+    //  console.log(data);       
+     }
+     
+    })
+ modal.show()
+});
    
 
 </script>

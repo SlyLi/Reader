@@ -70,8 +70,12 @@ def book_reader(request,book_pk,chapter_pk):
         if not request.user.is_authenticated:
             return HttpResponse('required login')  
         
-        UserBookRecord(user_id =request.user.id, book_id =book_pk, chapter_id = chapter_pk, words_read = int(request.POST['words'])).save()
-        return HttpResponse('success')  
+        if 'words' in request.POST:
+            UserBookRecord(user_id =request.user.id, book_id =book_pk, chapter_id = chapter_pk, words_read = int(request.POST['words'])).save()
+            return HttpResponse('success')  
+        if 'kwd' in request.POST:
+            return keyword_search(request,book_pk,chapter_pk,str(request.POST['kwd']))
+
 
     chapter_list = Chapter.objects.filter(book_id = book_pk)
     chapter = get_object_or_404(Chapter,pk = chapter_pk)
@@ -120,13 +124,26 @@ def book_del(request,pk):
     return redirect('reader:book_admin')
 
 
+class search_item:
+    def __init__(self,book,chapter,cont,off):
+        self.book_pk = book
+        self.chapter_pk = chapter
+        self.content = cont
+        self.offset = off
+
 def keyword_search(request,book_pk,chapter_pk,kwd):
     chapter_list = Chapter.objects.filter(book_id = book_pk)
-    lines = []
+    search_list = []
     for chapter in chapter_list:
         con = get_object_or_404(Content,pk = chapter.content_id)
         content_lines = con.content.split('\n')
-        for cont in content_lines:
-            if cont.find(kwd) != -1:
-                lines.append(cont)
-    return render(request, 'search.html', {'list': lines})
+        cnt = 0
+        content_cnt = [0,]
+        for i in content_lines:
+            cnt += len(i)
+            content_cnt.append(cnt)
+
+        for i in range(len(content_lines)):
+            if content_lines[i].find(kwd) != -1:
+                search_list.append(search_item(book_pk,chapter.id,content_lines[i],content_cnt[i]))
+    return render(request, 'search.html', {'list': search_list})

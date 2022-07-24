@@ -113,3 +113,23 @@ article{
 .form-signin .form-control:focus {z-index: 2;}
 .form-signin input[type="email"] {margin-bottom: -1px;border-bottom-right-radius: 0;border-bottom-left-radius: 0;}
 .form-signin input[type="password"] {margin-bottom: 10px;border-top-left-radius: 0;border-top-right-radius: 0;}
+
+.noa{
+	display: block;
+	color:#666;
+	text-decoration:none;
+}
+
+.mob-icon{
+	width: 2.5rem;
+	height: 2.5rem;
+	margin: -5px auto 4px auto;
+	font-size: 2rem;
+	text-align: center;
+}
+
+.mob-icon-text{
+	font-size: 0.6rem;
+	text-align: center; 
+	display: block;
+}
