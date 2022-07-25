@@ -4,6 +4,12 @@
 {% block title %} Reader {% endblock %}
 
 {% block content %}
+<style>
+    .offcanvas-backdrop.show{
+        opacity: 0;
+    }
+</style>
+
 
 <main class="vh-100">
     
@@ -108,7 +114,7 @@
             
         </div>
     </div>
-    <div class="offcanvas offcanvas-bottom h-auto col-12 " data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvasBottom" aria-labelledby="offcanvasBottomLabel"> 
+    <div class="offcanvas offcanvas-bottom offcanvas-bottom-all h-auto col-12 " data-bs-scroll="true"  tabindex="-1" id="offcanvasBottom" aria-labelledby="offcanvasBottomLabel"> 
         <div class="col-12 col-lg-6 mx-auto">
             <div class="container-fluid">
                 <div class="row justify-content-between align-items-center">
@@ -131,10 +137,18 @@
                 </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active p-0 py-2" aria-current="page" href="#" style="color: #fff;">
-                        <i class="bi bi-app-indicator d-block mob-icon"></i>
-                        <span class="mob-icon-text">菜单</span>                    
-                    </a>
+                    <div class="div dropup ">
+                        <a class="nav-link active p-0 py-2" aria-current="page" href="#" style="color: #fff;" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-app-indicator d-block mob-icon"></i>
+                            <span class="mob-icon-text">菜单</span>                    
+                        </a>
+                        <ul class="dropdown-menu  dropdown-menu-dark" >
+                            <li><a class="dropdown-item search-btn text-center"  href="#">搜索</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">Menu item</a></li>
+                        </ul>
+                    </div>
+                    
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active p-0 py-2" href="{% url 'reader:book_list' %}" aria-current="page" style="color: #fff;">
@@ -143,38 +157,28 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active p-0 py-2" aria-current="page" href="#" style="color: #fff;">
+                    <a class="nav-link active p-0 py-2 setting-btn" data-bs-toggle="offcanvas" href="#offcanvassetting" href="#" style="color: #fff;">
                         <i class="bi bi bi-gear-wide-connected d-block mob-icon"></i>
                         <span class="mob-icon-text">设置</span>                    
                     </a>
                 </li>
             </ul>
             
-            <!-- <nav class="navbar navbar-dark bg-dark">
-                <div  style="display:inline-flex;">
-                    <a class="navbar-brand chapter_list_btn  m-0 p-0" href="#" style="display:inline-block;">
-                        <i class="bi bi-list d-block " style="width: 2rem;height: 2rem; margin: 0 auto;font-size: 2rem;"></i>
-                        <span style="font-size: 0.6rem;">目录</span>
-                    </a>
-                    <a class="navbar-brand chapter_list_btn " href="{% url 'reader:book_list' %}" style="display:inline-block;">
-                        <i class="bi bi-list d-block " style="width: 2rem;height: 2rem; margin: 0 auto;font-size: 2rem;"></i>
-                        <span style="font-size: 0.6rem;">返回</span>
-                    </a>
-                    <a class="navbar-brand chapter_list_btn l" href="#" style="display:inline-block;">
-                        <i class="bi bi-list d-block " style="width: 2rem;height: 2rem; margin: 0 auto;font-size: 2rem;"></i>
-                        <span style="font-size: 0.6rem;">菜单</span>
-                    </a>
-                    <a class="navbar-brand chapter_list_btnl" href="#" style="display:inline-block;">
-                        <i class="bi bi-list d-block " style="width: 2rem;height: 2rem; margin: 0 auto;font-size: 2rem;"></i>
-                        <span style="font-size: 0.6rem;">设置</span>
-                    </a>
-                   
-                </div>
-            </nav> -->
+        
         </div>
         
     </div>
-
+    
+    <div class="offcanvas offcanvas-bottom offcanvas-bottom-setting h-auto col-12 " data-bs-scroll="true"  tabindex="-1" id="offcanvassetting" aria-labelledby="offcanvasBottomLabel"> 
+        <div class="col-12 col-lg-6 mx-auto">
+            <div class="container-fluid">
+                123
+            </div>
+            
+           
+        </div>
+        
+    </div>
 
     <div class="d-none d-lg-block" style="right: 20px; bottom:20px;position: fixed;">
         
@@ -186,7 +190,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="#" class="nav-link  px-2 py-1 active border-bottom" aria-current="page" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Home">
+                <a href="#" class="nav-link  px-2 py-1 active border-bottom setting-btn" aria-current="page" title=""  >
                     <i class="bi bi-gear"></i>
                 </a>
             </li>
@@ -195,25 +199,43 @@
     </div>
     <!-- Scrollable modal -->
     <div class="modal myModal">
-    <div class="modal-dialog modal-dialog-scrollable modal-xl modal-fullscreen-lg-down	">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">搜索结果</h5>
-                <div style="margin: -0.5rem -0.5rem -0.5rem auto;">
-                    <form class="col-6 col-lg-auto ms-2 me-2 me-lg-3" role="search" onsubmit="return false;">
-                        <input type="search" class="form-control content-serarch" placeholder="搜索..." aria-label="Search" control-id="ControlID-2">
-                    </form>
+        <div class="modal-dialog modal-dialog-scrollable modal-xl modal-fullscreen-lg-down	">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"> </h5>
+                    <div style="margin: -0.5rem 0.5rem -0.5rem auto;">
+                        <form class="col-6 col-lg-auto ms-2 me-2 me-lg-3 w-100" role="search" onsubmit="return false;">
+                            <input type="search" class="form-control content-serarch" placeholder="搜索..." aria-label="Search" control-id="ControlID-2">
+                        </form>
+                    </div>
+                
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="margin: -0.5rem -0.5rem -0.5rem 0.5rem;"></button>
                 </div>
-              
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="margin: -0.5rem -0.5rem -0.5rem 0.5rem;"></button>
+                <div class="modal-body search-res">
+                <p>Modal body text goes here.</p>
+                </div>
+                
             </div>
-            <div class="modal-body search-res">
-              <p>Modal body text goes here.</p>
-            </div>
-            
-          </div>
+        </div>
     </div>
-</div>
+
+   
+
+    <div class="modal setting_modal">
+        <div class="modal-dialog modal-dialog-scrollable  modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">设置</h5>
+                    
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="margin: -0.5rem -0.5rem -0.5rem 0.5rem;"></button>
+                </div>
+                <div class="modal-body">
+                <p>Modal body text goes here.</p>
+                </div>
+                
+            </div>
+        </div>
+    </div>
 </main>
 
 
@@ -229,7 +251,8 @@ var mobile   = '/Mobile|iP(hone|od|ad)|Android|BlackBerry|IEMobile|Kindle|NetFro
 var isMobile     = navigator.userAgent.match(mobile)
 var offcanvasTop = new bootstrap.Offcanvas($('.offcanvas-top'))
 var offcanvasLeft = new bootstrap.Offcanvas($('.offcanvas-start'))
-var offcanvasBottom = new bootstrap.Offcanvas($('.offcanvas-bottom'))
+var offcanvasBottom = new bootstrap.Offcanvas($('.offcanvas-bottom-all'))
+var offcanvasSetting = new bootstrap.Offcanvas($('.offcanvas-bottom-setting'))
 
 if (isMobile)
 {
@@ -268,6 +291,9 @@ if (isMobile)
     })
 
     $('.chapter_list_btn').click(function(e){  
+        var act = $('.offcanvas-start .offcanvas-body .list-group-item.active ')
+        if(act[0])
+            $('.offcanvas-start .offcanvas-body').scrollTop(act.offset().top - act.height()*4)
         offcanvasBottom.hide()
         localStorage.removeItem('offcanvasBottom')
         offcanvasLeft.show() 
@@ -327,6 +353,9 @@ if (isMobile)
 else
 {
     $('.chapter_list_btn').click(function(e){  
+        var act = $('.offcanvas-start .offcanvas-body .list-group-item.active ')
+        if(act[0])
+            $('.offcanvas-start .offcanvas-body').scrollTop(act.offset().top - act.height()*4)
         offcanvasLeft.toggle() 
     })
     document.onkeydown=function(e){    //对整个页面监听  
@@ -486,7 +515,16 @@ $('.content-serarch').bind("search", function() {
     })
  modal.show()
 });
-   
+
+$('.search-btn').click(function(){
+    modal.show()
+})
+
+// $('.setting-btn').click(function(){
+//     offcanvasSetting.toggle()
+// })
+
+
 
 </script>
 {% endblock %}
