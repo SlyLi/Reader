@@ -151,7 +151,7 @@
                     
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active p-0 py-2" href="{% url 'reader:book_list' %}" aria-current="page" style="color: #fff;">
+                    <a class="nav-link active p-0 py-2 back-btn" href="{% url 'reader:book_list' %}" aria-current="page" style="color: #fff;">
                         <i class="bi bi-arrow-up-left-square d-block mob-icon" ></i>
                         <span class="mob-icon-text">返回</span>                    
                     </a>
@@ -171,8 +171,20 @@
     
     <div class="offcanvas offcanvas-bottom offcanvas-bottom-setting h-auto col-12 " data-bs-scroll="true"  tabindex="-1" id="offcanvassetting" aria-labelledby="offcanvasBottomLabel"> 
         <div class="col-12 col-lg-6 mx-auto">
-            <div class="container-fluid">
-                123
+            <div class="container-fluid bg-dark">
+                <div class="input-group  p-3  justify-content-center">
+                    <button class="btn btn-outline-light dec-font" type="button">A-</button>
+                    <span class="form-control flex-grow-0 w-25 font-value text-center"> </span>
+                    <!-- <span type="text" class="form-control flex-grow-0 w-25 font-value text-center" > -->
+                    <button class="btn btn-outline-light inc-font" type="button">A+</button>
+                </div>
+                
+                <ul class="nav nav-fill justify-content-center text-light" style="height: 80px;">
+                    <li class="nav-item bg-primary rounded m-2 border"></li>
+                    <li class="nav-item bg-white rounded  m-2 border"></li>
+                    <li class="nav-item bg-dark rounded  m-2 border"></li>
+                    <li class="nav-item bg-light rounded  m-2 border"></li>
+                </ul>
             </div>
             
            
@@ -258,8 +270,20 @@ if (isMobile)
 {
     if(localStorage.getItem('offcanvasBottom'))
     {
+        console.log(localStorage.getItem('offcanvasBottom'))
         offcanvasBottom.show()
     }
+
+    document.getElementById('offcanvasBottom').addEventListener('hide.bs.offcanvas', function () {
+        localStorage.removeItem('offcanvasBottom')
+    })
+    document.getElementById('offcanvasBottom').addEventListener('show.bs.offcanvas', function () {
+        localStorage.setItem('offcanvasBottom','ture')
+    })
+    $('.back-btn').click(function(){
+        localStorage.removeItem('offcanvasBottom')
+    })
+
     $('.article-container').click(function(e){
         var menu_w =  $('.center_menu').width()/2
         var menu_h =  $('.center_menu').height()/2
@@ -282,12 +306,6 @@ if (isMobile)
     $('.center_menu').click(function(e){
     // offcanvasTop.toggle()
         offcanvasBottom.toggle()
-        if(offcanvasBottom._isShown)
-            localStorage.setItem('offcanvasBottom','ture')
-        else
-            localStorage.removeItem('offcanvasBottom')
-
-        console.log(localStorage.getItem('offcanvasBottom'))
     })
 
     $('.chapter_list_btn').click(function(e){  
@@ -295,7 +313,6 @@ if (isMobile)
         if(act[0])
             $('.offcanvas-start .offcanvas-body').scrollTop(act.offset().top - act.height()*4)
         offcanvasBottom.hide()
-        localStorage.removeItem('offcanvasBottom')
         offcanvasLeft.show() 
     
     })
@@ -524,8 +541,23 @@ $('.search-btn').click(function(){
 //     offcanvasSetting.toggle()
 // })
 
+document.getElementById('offcanvassetting').addEventListener('show.bs.offcanvas', function () {
+    $('.font-value').text(parseInt($('article').css('font-size')))
+    console.log($('article').css('font-size'))
+    })
 
-
+$('.inc-font').click(function(){
+    var font = parseInt($('article').css('font-size'))
+    font += 1
+    $('.font-value').text(font)
+    $('article').css('font-size',font)
+})
+$('.dec-font').click(function(){
+    var font = parseInt($('article').css('font-size'))
+    font -= 1
+    $('.font-value').text(font)
+    $('article').css('font-size',font)
+})
 </script>
 {% endblock %}
 
