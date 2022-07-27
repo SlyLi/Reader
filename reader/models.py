@@ -36,6 +36,11 @@ class UserBookRecord(models.Model):
     read_time = models.DateTimeField(default = timezone.now)
     words_read = models.IntegerField()
 
+class UserSetting(models.Model):
+    user_id = models.IntegerField()
+    font_size = models.IntegerField(default=16)
+    read_bg = models.CharField(max_length=256,default='#fff')
+
 def handle_uploaded_file(f):
     if str(f)[-4:]!='.txt':
         return

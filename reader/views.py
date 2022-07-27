@@ -86,13 +86,19 @@ def book_reader(request,book_pk,chapter_pk):
     # print(request.META['HTTP_REFERER'])
     if request.user.is_authenticated and 'HTTP_REFERER' in request.META and 'book_list' in request.META['HTTP_REFERER'] :
         last = UserBookRecord.objects.filter(user_id = request.user.id , book_id = book_pk).order_by('-read_time')
+        user_setting = get_object_or_404(UserSetting,user_id = request.user.id)
         if len(last) > 0:
             last = last[0]
             print(last.words_read)
-            return render(request, 'book_reader.html', {'chapter_list': chapter_list,'chapter_title':content_lines[0],'content_lines':content_lines[1:],'last_words':last.words_read})
+            return render(request, 'book_reader.html', 
+                {'chapter_list': chapter_list,'chapter_title':content_lines[0],'content_lines':content_lines[1:],
+                'last_words':last.words_read,'user_setting':user_setting})
 
-    
-    return render(request, 'book_reader.html', {'chapter_list': chapter_list,'chapter_title':content_lines[0],'content_lines':content_lines[1:]})
+    if request.user.is_authenticated:
+        user_setting = get_object_or_404(UserSetting,user_id = request.user.id)
+        return render(request, 'book_reader.html', {'chapter_list': chapter_list,'chapter_title':content_lines[0],'content_lines':content_lines[1:],'user_setting':user_setting})
+    else:
+        return render(request, 'book_reader.html', {'chapter_list': chapter_list,'chapter_title':content_lines[0],'content_lines':content_lines[1:]})
 
 def login_auth(request):
     if request.method == 'POST':
@@ -147,3 +153,20 @@ def keyword_search(request,book_pk,chapter_pk,kwd):
             if content_lines[i].find(kwd) != -1:
                 search_list.append(search_item(book_pk,chapter.id,content_lines[i],content_cnt[i]))
     return render(request, 'search.html', {'list': search_list})
+
+def update_setting(request):
+    if request.user.is_authenticated and request.method == 'POST':
+        print(request.POST.keys())
+        print(request.POST['font_size'])
+        print(request.POST['read_bg'])
+        
+        settings = UserSetting.objects.filter(user_id = request.user.id)
+        if len(settings) == 0:
+            setting = UserSetting(user_id = request.user.id,font_size = request.POST['font_size'],read_bg = request.POST['read_bg'])
+            setting.save()
+        else:
+            settings[0].font_size = request.POST['font_size']
+            settings[0].read_bg = request.POST['read_bg']
+            settings[0].save()
+        return HttpResponse('ok')  
+    return HttpResponse('not login')  
