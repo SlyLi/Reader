@@ -18,5 +18,6 @@ urlpatterns = [
     path('logout', views.logout_view, name='logout'),
     path('book_del/<int:pk>', views.book_del, name='book_del'),
     path('update_setting', views.update_setting, name='update_setting'),
+    path('bookmark', views.bookmark_save, name='bookmark_save'),
 
 ]

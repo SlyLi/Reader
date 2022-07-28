@@ -41,6 +41,14 @@ class UserSetting(models.Model):
     font_size = models.IntegerField(default=16)
     read_bg = models.CharField(max_length=256,default='#fff')
 
+class UserBookMark(models.Model):
+    user_id = models.IntegerField()
+    book_id = models.IntegerField()
+    chapter_id = models.IntegerField()
+    words_read = models.IntegerField()
+    content = models.TextField()
+    add_time = models.DateTimeField(default = timezone.now)
+
 def handle_uploaded_file(f):
     if str(f)[-4:]!='.txt':
         return

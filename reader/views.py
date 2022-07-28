@@ -65,6 +65,38 @@ def book(request,pk):
     return redirect('reader:book_reader',book_pk=pk,chapter_pk=book.first_chapter)
 
 
+def book_reader_offset(request,book_pk,chapter_pk,offset):
+    chapter_list = Chapter.objects.filter(book_id = book_pk)
+    chapter_list = Chapter.objects.filter(book_id = book_pk)
+    chapter = get_object_or_404(Chapter,pk = chapter_pk)
+    con = get_object_or_404(Content,pk = chapter.content_id)
+    content_lines = con.content.split('\n')
+    if len(content_lines) == 1:
+        content_lines = content_lines[0].split(' ',1)
+    last = UserBookRecord.objects.filter(user_id = request.user.id , book_id = book_pk).order_by('-read_time')
+    user_setting = get_object_or_404(UserSetting,user_id = request.user.id)
+    if len(last) > 0:
+        last = last[0]
+
+    return render(request, 'book_reader.html', 
+                {'chapter_list': chapter_list,'chapter_title':content_lines[0],'content_lines':content_lines[1:],
+                'last_words':last.words_read,'user_setting':user_setting})
+
+
+
+def progress(book_id,chapter_id):
+    chapter_list = Chapter.objects.filter(book_id = book_id)
+    all = 0.0
+    read = 0.0
+    for ch in chapter_list:
+        all+=ch.words
+    
+    for ch in chapter_list:
+        if chapter_id == ch.id:
+            break
+        read+=ch.words
+    return read/all *100 
+    
 def book_reader(request,book_pk,chapter_pk):
     if  request.method == 'POST':
         if not request.user.is_authenticated:
@@ -87,18 +119,20 @@ def book_reader(request,book_pk,chapter_pk):
     if request.user.is_authenticated and 'HTTP_REFERER' in request.META and 'book_list' in request.META['HTTP_REFERER'] :
         last = UserBookRecord.objects.filter(user_id = request.user.id , book_id = book_pk).order_by('-read_time')
         user_setting = get_object_or_404(UserSetting,user_id = request.user.id)
+        user_bookmark = UserBookMark.objects.filter(user_id = request.user.id,book_id = book_pk).order_by('-add_time')
         if len(last) > 0:
             last = last[0]
-            print(last.words_read)
             return render(request, 'book_reader.html', 
                 {'chapter_list': chapter_list,'chapter_title':content_lines[0],'content_lines':content_lines[1:],
-                'last_words':last.words_read,'user_setting':user_setting})
+                'last_words':last.words_read,'user_setting':user_setting,'user_bookmark':user_bookmark,'progess':progress(book_pk,chapter_pk)})
 
     if request.user.is_authenticated:
         user_setting = get_object_or_404(UserSetting,user_id = request.user.id)
-        return render(request, 'book_reader.html', {'chapter_list': chapter_list,'chapter_title':content_lines[0],'content_lines':content_lines[1:],'user_setting':user_setting})
+        user_bookmark = UserBookMark.objects.filter(user_id = request.user.id,book_id = book_pk).order_by('-add_time')
+        return render(request, 'book_reader.html', {'chapter_list': chapter_list,'chapter_title':content_lines[0],'content_lines':content_lines[1:],
+            'user_setting':user_setting,'user_bookmark':user_bookmark,'progess':progress(book_pk,chapter_pk)})
     else:
-        return render(request, 'book_reader.html', {'chapter_list': chapter_list,'chapter_title':content_lines[0],'content_lines':content_lines[1:]})
+        return render(request, 'book_reader.html', {'chapter_list': chapter_list,'chapter_title':content_lines[0],'content_lines':content_lines[1:],'progess':progress(book_pk,chapter_pk)})
 
 def login_auth(request):
     if request.method == 'POST':
@@ -170,3 +204,16 @@ def update_setting(request):
             settings[0].save()
         return HttpResponse('ok')  
     return HttpResponse('not login')  
+
+
+def bookmark_save(request):
+    if not request.user.is_authenticated:
+        return HttpResponse('not login')  
+    
+    if request.method == 'POST':
+        user_bookmark = UserBookMark(user_id = request.user.id,book_id = request.POST['book_id'],chapter_id = request.POST['chapter_id'],
+            words_read = request.POST['words_read'],content =request.POST['content'] )
+        user_bookmark.save()
+        return HttpResponse('ok')  
+
+    
