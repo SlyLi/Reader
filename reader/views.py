@@ -1,12 +1,7 @@
-from audioop import reverse
-from msilib.schema import ControlEvent
 from django.http import HttpResponse, HttpResponseRedirect
-from requests import request
-from .forms import UploadFileForm
 from .models import *
 from django.views import generic
 from django.shortcuts import get_object_or_404, redirect, render
-import json
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required
 
