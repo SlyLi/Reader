@@ -30,8 +30,8 @@ def handle_uploaded_file(request):
     # pat = u'(?<=[　\s])(?:序章|序言|卷首语|扉页|楔子|正文(?!完|结)|终章|后记|尾声|番外|第?\s{0,4}[\d〇零一二两三四五六七八九十百千万壹贰叁肆伍陆柒捌玖拾佰仟]+?\s{0,4}(?:章|节(?!课)|卷|集(?![合和])|部(?![分赛游])|篇(?!张))).{0,30}$'
     pattern = re.compile(pat)
     match = pattern.findall(file)
-    print(file[:200])
-    print(match)
+    # print(file[:200])
+    # print(match)
     st = file.find(match[0],0)
     
     intro = '介绍' if st > 5000 else '正文'
