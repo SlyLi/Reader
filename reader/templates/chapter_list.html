@@ -1,6 +1,12 @@
-<ul>
+<!-- <ul>
     {% for c in chapter_list %}
     <li><a href="{% url 'reader:chapter_detail' c.id %}">{{ c.title }}</a></li>
 
     {% endfor %}
-</ul>
+</ul> -->
+
+<div class="list-group">
+    {% for c in chapter_list %}
+    <a class="list-group-item {% if request.resolver_match.kwargs.chapter_pk == c.id %} active {% endif %}" href="{% url 'reader:book_reader' c.book_id c.id %}" method="post">{{ c.title }}</a>
+    {% endfor %}
+</div>

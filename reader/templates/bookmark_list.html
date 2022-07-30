@@ -1,0 +1,12 @@
+<div class="ul-list">
+    {% for m in bookmark_list %}
+        <a class="list-group-item bookmark_redirect" href="{% url 'reader:book_reader_offset'  m.book_id m.chapter_id m.words_read %}">
+            <div class=" text-break overflow-hidden book-tittle">
+                {{m.content}}
+            </div>
+            
+        </a>
+        {% endfor %}
+
+</div>
+

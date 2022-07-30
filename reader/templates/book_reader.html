@@ -14,6 +14,11 @@ main{
 article{
     font-size:{{user_setting.font_size}}px;
 }
+    {% if 'rgb(0, 0, 0)' in user_setting.read_bg %}
+    main{
+        color:rgb(90, 90, 90);
+    }
+    {% endif %}
 {% endif %}
 
 
@@ -86,10 +91,10 @@ article{
     <div class="offcanvas offcanvas-start col-12 col-lg-3" data-bs-scroll="false" data-bs-backdrop="false" tabindex="-1" id="offcanvasLeft" aria-labelledby="offcanvasLeftLabel"> 
         <div class="offcanvas-header">
             <ul class="nav nav-pills me-1" id="pills-tab" role="tablist">
-                <li class="nav-item" role="presentation">
+                <li class="nav-item chapter-list-show" role="presentation">
                 <a class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">目录</a>
                 </li>
-                <li class="nav-item" role="presentation">
+                <li class="nav-item bookmark-show" role="presentation">
                 <a class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">书签</a>
                 </li>
                 
@@ -110,16 +115,7 @@ article{
                 </div>
 
                 <div class="tab-pane fade text-wrap" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
-                    <div class="ul-list">
-                        {% for m in user_bookmark %}
-                            <div class="list-group-item" >
-                                <div class=" text-break overflow-hidden book-tittle">
-                                    {{m.content}}
-                                </div>
-                                
-                            </div>
-                            {% endfor %}
-                    
+                    <div class="bookmark_list_container">
                     </div>
                     
                 </div>
@@ -199,6 +195,7 @@ article{
                     <li class="nav-item rounded m-2 border bg-setting read-blue update-setting" style="background: #c3d4e6;"></li>
                     <li class="nav-item rounded m-2 border bg-setting read-green update-setting" style="background: #c8e8c8;"></li>
                     <li class="nav-item rounded m-2 border bg-setting read-yellow update-setting" style="background: #c4b395"></li>
+                    <li class="nav-item rounded m-2 border bg-setting read-black update-setting" style="background: #000"></li>
 
                 </ul>
             </div>
@@ -280,384 +277,24 @@ article{
 {% load static %}
 
 <script>
-var mobile   = '/Mobile|iP(hone|od|ad)|Android|BlackBerry|IEMobile|Kindle|NetFront|Silk-Accelerated|(hpw|web)OS|Fennec|Minimo|Opera M(obi|ini)|Blazer|Dolfin|Dolphin|Skyfire|Zune/g'
-var isMobile     = navigator.userAgent.match(mobile)
-var offcanvasTop = new bootstrap.Offcanvas($('.offcanvas-top'))
-var offcanvasLeft = new bootstrap.Offcanvas($('.offcanvas-start'))
-var offcanvasBottom = new bootstrap.Offcanvas($('.offcanvas-bottom-all'))
-var offcanvasSetting = new bootstrap.Offcanvas($('.offcanvas-bottom-setting'))
+var csrf_token = '{{ csrf_token }}'
+var url_book_reader = "{% url 'reader:book_reader' request.resolver_match.kwargs.book_pk request.resolver_match.kwargs.chapter_pk %}"
+var last_words = parseInt({{last_words}})
+var user_setting_bg = "{{user_setting.read_bg}}"
+var url_update_setting = "{% url 'reader:update_setting' %}"
+var url_bookmark_save = "{% url 'reader:bookmark_save' %}"
+var book_id = '{{request.resolver_match.kwargs.book_pk}}'
+var chapter_id='{{request.resolver_match.kwargs.chapter_pk}}'
+var url_chapter_list = "{% url 'reader:chapter_list' request.resolver_match.kwargs.book_pk%}"
 
-if (isMobile)
-{
-    if(localStorage.getItem('offcanvasBottom'))
-    {
-        console.log(localStorage.getItem('offcanvasBottom'))
-        $('.offcanvas-bottom-all').addClass("show").css('visibility','visible');
-        // offcanvasBottom.show()
-    }
-
-    document.getElementById('offcanvasBottom').addEventListener('hide.bs.offcanvas', function () {
-        localStorage.removeItem('offcanvasBottom')
-    })
-    document.getElementById('offcanvasBottom').addEventListener('show.bs.offcanvas', function () {
-        localStorage.setItem('offcanvasBottom','ture')
-    })
-    $('.back-btn').click(function(){
-        localStorage.removeItem('offcanvasBottom')
-    })
-
-    $('.article-container').click(function(e){
-        var menu_w =  $('.center_menu').width()/2
-        var menu_h =  $('.center_menu').height()/2
-        var client_w =  $('.article-container').width()/2
-        var client_h =  $('.article-container').height()/2
-        if((e.clientX > client_w +menu_w)||(e.clientY > client_h+menu_h &&e.clientX > client_w-menu_w))
-        {
-            $('.next-page').click()
-        }
-        else if((e.clientX < client_w - menu_w)||(e.clientY < client_h - menu_h &&e.clientX < client_w + menu_w))
-        {
-            $('.prev-page').click()
-        }
-        else
-        {
-            $('.center_menu').click()
-        }
-    })
-
-    $('.center_menu').click(function(e){
-    // offcanvasTop.toggle()
-        offcanvasBottom.toggle()
-    })
-
-    $('.chapter_list_btn').click(function(e){  
-        var act = $('.offcanvas-start .offcanvas-body .list-group-item.active ')
-        if(act[0])
-            $('.offcanvas-start .offcanvas-body').scrollTop(act.offset().top - act.height()*4)
-        offcanvasBottom.hide()
-        offcanvasLeft.show() 
-    
-    })
-
-    var startX;
-    var startY;
-    var moveEndX
-    var moveEndY
-    var X
-    var Y
-    var trans
-    var last_page_offset = - parseInt($('#marker').offset().left - $('article').offset().left) 
-    $(".article-container").on("touchstart", function (e) {
-        startX = e.originalEvent.changedTouches[0].pageX,
-        startY = e.originalEvent.changedTouches[0].pageY;
-        if($('article').css('transform') == 'none')
-            trans = 0
-        else
-            trans = parseFloat($('article').css('transform').split(',')[4])
-    });
-
-    $(".article-container").on("touchmove", function (e) {
-        moveEndX = e.originalEvent.changedTouches[0].pageX
-        moveEndY = e.originalEvent.changedTouches[0].pageY
-        X = moveEndX - startX
-        Y = moveEndY - startY
-        $('article').css('transform',`translateX(${trans + X}px)`)
-    });
-
-    $(".article-container").on("touchend",function(e){
-        moveEndX = e.originalEvent.changedTouches[0].pageX
-        moveEndY = e.originalEvent.changedTouches[0].pageY
-        X = moveEndX - startX
-        Y = moveEndY - startY
-
-        console.log(parseFloat($('article').css('transform').split(',')[4]))
-        console.log(last_page_offset)
-        if(parseFloat($('article').css('transform').split(',')[4]) > 0)
-            $('article').css('transform',`translateX(0px)`)
-        else if(parseFloat($('article').css('transform').split(',')[4]) < last_page_offset)
-        {
-            $('article').css('transform',`translateX(${last_page_offset}px)`)
-        }
-        
-        if (X < 0) {
-            $('.next-page').click()
-        }
-        else if (X > 0) {
-            $('.prev-page').click()
-        }
-    
-    })
-
-}
-else
-{
-    $('.chapter_list_btn').click(function(e){  
-        var act = $('.offcanvas-start .offcanvas-body .list-group-item.active ')
-        if(act[0])
-            $('.offcanvas-start .offcanvas-body').scrollTop(act.offset().top - act.height()*4)
-        offcanvasLeft.toggle() 
-    })
-    document.onkeydown=function(e){    //对整个页面监听  
-        var keyNum=window.event ? e.keyCode :e.which;       //获取被按下的键值  
-        if(keyNum==37){  //left
-            $('.prev-page').click()
-        }  
-        if(keyNum==38){  //up
-            $('.page-link.prev-chapter')[0].click()
-        }  
-        if(keyNum==39 | keyNum == 32){  //right space
-            $('.next-page').click()
-        } 
-        if(keyNum==40){  //down
-            $('.page-link.next-chapter')[0].click()
-        } 
-    } 
-}
-
-
-page_width = $('article').width() + parseInt($('article').css('column-gap'))
-page_num = parseInt(($('#marker').offset().left - $('article').offset().left)/ page_width +1)
-
-// console.log(page_width)
-var page_contents_len = new Array(page_num + 1 ).fill(0);
-$('article p').each((i,e)=>{
-    page_contents_len[parseInt($(e).offset().left/page_width) + 1]+=$(e).text().length
-})
-for(var i =1;i<page_num+1;i++)
-    page_contents_len[i] += page_contents_len[i-1]
-if(page_num>0)
-{
-    for(var i=0;i<page_num;i++)
-    {
-        $('.pages-container').prepend($('<li class="page-item page-num"><a class="page-link" href="#">'+ String(page_num-i)+'</a></li>'))   
-    }
-    $('.pages-container').children().first().addClass('active')
-}
-
-
-
-$('.prev-chapter').attr('href',$('.list-group-item.active').prev().attr('href'))
-$('.next-chapter').attr('href',$('.list-group-item.active').next().attr('href'))
-
-
-
-$('.page-item').click(function(e){
-    var cur = $('.page-item.active')
-    var cur_idx = parseInt(cur.text()) -1
-    var all = $('.page-num').length
-    if ($(this).hasClass('prev-page'))
-    {
-        if(cur_idx>0)
-        {
-            
-            cur.prev().addClass('active')
-            cur.removeClass('active')
-            $('article').css('transform',`translateX(-${page_width * (cur_idx - 1 )}px)`)
-            save_record()
-            
-        }
-        else{
-            console.log(cur_idx)
-            $('.page-link.prev-chapter')[0].click()
-            localStorage.setItem('prev-chapter','true')
-        }
-    }
-    else if ($(this).hasClass('next-page'))
-    {
-        if(cur_idx<all-1)
-        {
-            
-            cur.next().addClass('active')
-            cur.removeClass('active')
-            $('article').css('transform',`translateX(-${page_width * (cur_idx +1 )}px)`)
-            save_record()
-        }
-        else
-        {
-            $('.page-link.next-chapter')[0].click()
-        }
-    }
-    else if ($(this).hasClass('page-num'))
-    {
-        cur.removeClass('active')
-        $(this).addClass('active')
-        cur_idx = parseInt($(this).text()) -1 
-        $('article').css('transform',`translateX(-${page_width * cur_idx}px)`)
-        save_record()
-    }
-})
-
-function save_record()
-{
-    $.ajax({
-     url: "{% url 'reader:book_reader' request.resolver_match.kwargs.book_pk request.resolver_match.kwargs.chapter_pk %}", 
-     type: 'post',
-     data: {
-         'words': page_contents_len[parseInt($('.page-item.active').text()) - 1],
-         csrfmiddlewaretoken: '{{ csrf_token }}'
-     },
-     // 上面data为提交数据，下面data形参指代的就是异步提交的返回结果data
-     success: function (data){
-     console.log(data);       
-     }
- })
-
-}
-
-
-if(localStorage.getItem('prev-chapter'))
-{
-    $('.pages-container').children().last().click()
-    localStorage.removeItem('prev-chapter')
-    save_record()
-}
-else
-{
-    save_record()
-}
-
-{% if last_words %}
-    var words = parseInt({{last_words}})
-    for(var i=0;i<page_num+1;i++)
-    {
-        if(page_contents_len[i]>words)
-        {
-            $('.page-item').each((idx,e)=>{
-                if(parseInt($(e).text()) == i)
-                    $(e).click()
-            })
-            break
-        }
-    }
+var url_bookmark_list = "{% url 'reader:null'  %}"
+{% if request.user.id %}
+var url_bookmark_list = "{% url 'reader:bookmark_list' request.user.id  request.resolver_match.kwargs.book_pk %}"
 {% endif %}
-
-var modal = new bootstrap.Modal($(".myModal")) // Returns a Bootstrap modal instance\
-$('.content-serarch').bind("search", function() {
-    // console.log($('.content-serarch').val())
-    // console.log($(this).val())
-    $.ajax({
-     url: "{% url 'reader:book_reader' request.resolver_match.kwargs.book_pk request.resolver_match.kwargs.chapter_pk %}", 
-     type: 'post',
-     data: {
-         'kwd': $(this).val(),
-         csrfmiddlewaretoken: '{{ csrf_token }}'
-     },
-     // 上面data为提交数据，下面data形参指代的就是异步提交的返回结果data
-     success: function (data){
-        $('.search-res').html(data)
-        // console.log($('.search-res .active'))
-        if($('.search-res .active')[0])
-            $('.search-res').scrollTop($('.search-res .active').offset().top)
-    //  console.log(data);       
-     }
-     
-    })
- modal.show()
-});
-
-$('.search-btn').click(function(){
-    modal.show()
-})
-
-// $('.setting-btn').click(function(){
-//     offcanvasSetting.toggle()
-// })
-
-document.getElementById('offcanvassetting').addEventListener('show.bs.offcanvas', function () {
-    $('.font-value').text(parseInt($('article').css('font-size')))
-    console.log($('article').css('font-size'))
-    // $().addClass('bodder border-4 border-secondary')
-
-    {% if user_setting %}
-        var had_choose = false
-        $('.bg-setting').each(function(){
-            if($(this).hasClass('bodder border-4 border-secondary'))
-                had_choose = true
-        })
-
-        $('.bg-setting').each(function(){
-            if(!had_choose && $(this).css('background')=="{{user_setting.read_bg}}")
-                $(this).addClass('bodder border-4 border-secondary')
-        })
-    {% endif %}
-})
-    
-    
-
-$('.inc-font').click(function(){
-    var font = parseInt($('article').css('font-size'))
-    font += 1
-    $('.font-value').text(font)
-    $('article').css('font-size',font)
-})
-$('.dec-font').click(function(){
-    var font = parseInt($('article').css('font-size'))
-    font -= 1
-    $('.font-value').text(font)
-    $('article').css('font-size',font)
-})
-
-
-$('.bg-setting').click(function(){
-    $('main').css('background',$(this).css('background'))
-    $('.bg-setting').removeClass('bodder border-4 border-secondary')
-    $(this).addClass('bodder border-4 border-secondary')
-})
-
-$('.update-setting').click(function(){
-    var bg = $('main').css('background')
-    if($(this).hasClass('bg-setting'))
-        bg = $(this).css('background')
-
-    $.ajax({
-     url: "{% url 'reader:update_setting' %}", 
-     type: 'post',
-     data: {
-         'font_size': $('.font-value').text(),
-         'read_bg':bg,
-         csrfmiddlewaretoken: '{{ csrf_token }}'
-     },
-     // 上面data为提交数据，下面data形参指代的就是异步提交的返回结果data
-     success: function (data){
-       
-     console.log(data);       
-     }
-     
-    })
-})
-
-$('.setting-btn').click(function(){
-    offcanvasSetting.toggle()
-})
-
-$('.bookmark-btn').click(function(){
-
-    var cont =''
-    $('article p').each((i,e)=>{
-        if(parseInt($(e).offset().left) >0  && parseInt($(e).offset().left)<page_width)
-            cont+=$(e).text()
-    })
-
-
-    $.ajax({
-     url: "{% url 'reader:bookmark_save' %}", 
-     type: 'post',
-     data: {
-         'book_id':' {{request.resolver_match.kwargs.book_pk}}',
-         'chapter_id':'{{request.resolver_match.kwargs.chapter_pk}}',
-         'words_read':page_contents_len[parseInt($('.page-item.active').text()) - 1],
-         'content':cont,
-         csrfmiddlewaretoken: '{{ csrf_token }}'
-     },
-     // 上面data为提交数据，下面data形参指代的就是异步提交的返回结果data
-     success: function (data){
-       
-     console.log(data);       
-     }
-     
-    })
-})
-console.log({{progess}})
 </script>
+
+<script src="{% static 'reader.js' %}"></script>
+
+
 {% endblock %}
 
