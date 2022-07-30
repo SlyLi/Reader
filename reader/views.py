@@ -63,8 +63,6 @@ def upload_file(request):
     if  request.method == 'POST':
         handle_uploaded_file(request)
         return render(request, 'upload_file.html', {'notice':"succeed"})
-        
-
     return render(request, 'upload_file.html')
 
 
