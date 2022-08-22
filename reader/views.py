@@ -169,12 +169,18 @@ def book_reader(request,book_pk,chapter_pk):
             return HttpResponse('required login')  
         
         if 'words' in request.POST:
-            UserBookRecord(user_id =request.user.id, book_id =book_pk, chapter_id = chapter_pk, words_read = int(request.POST['words'])).save()
+            records = UserBookRecord.objects.filter(user_id =request.user.id, book_id =book_pk)
+            if len(records) == 0:
+                UserBookRecord(user_id =request.user.id, book_id =book_pk, chapter_id = chapter_pk, words_read = int(request.POST['words'])).save()
+            else:
+                records[0].chapter_id = chapter_pk
+                records[0].words_read = int(request.POST['words'])
+                records[0].save()
+
             return HttpResponse('success')  
         if 'kwd' in request.POST:
             return keyword_search(request,book_pk,chapter_pk,str(request.POST['kwd']))
-
-    _book = get_object_or_404(Book,id = book_pk)
+    _book = get_object_or_404(Book,id = int(book_pk))
     if _book.uploader != 0 and _book.uploader != request.user.id:
         return redirect('reader:index')
 
@@ -207,7 +213,9 @@ def login_auth(request):
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(username=username, password=password)
-        print(user)
+        setting = UserSetting.objects.filter(user_id = user.id)
+        if len(setting) == 0:
+            UserSetting(user_id = user.id).save()
         if user is not None:
             login(request, user)
             return HttpResponse('success')  
