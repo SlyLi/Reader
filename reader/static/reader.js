@@ -1,5 +1,6 @@
 var mobile   = '/Mobile|iP(hone|od|ad)|Android|BlackBerry|IEMobile|Kindle|NetFront|Silk-Accelerated|(hpw|web)OS|Fennec|Minimo|Opera M(obi|ini)|Blazer|Dolfin|Dolphin|Skyfire|Zune/g'
-var isMobile     = navigator.userAgent.match(mobile)
+var isMobile     = navigator.userAgent.match('iP(hone|od|ad)')
+var isIOS = navigator.userAgent.match(mobile)
 var offcanvasTop = new bootstrap.Offcanvas($('.offcanvas-top'))
 var offcanvasLeft = new bootstrap.Offcanvas($('.offcanvas-start'))
 var offcanvasBottom = new bootstrap.Offcanvas($('.offcanvas-bottom-all'))
@@ -10,7 +11,12 @@ var page_num = parseInt(($('#marker').offset().left - $('article').offset().left
 var page_contents_len = new Array(page_num + 1 ).fill(0);
 var modal = new bootstrap.Modal($(".myModal")) // Returns a Bootstrap modal instance\
 
-
+if (isIOS)
+{
+    page_num -=1
+    $('article').css('height','95vh')
+}
+    
 
 if (isMobile)
 {
@@ -88,6 +94,7 @@ if (isMobile)
     });
 
     $(".article-container").on("touchmove", function (e) {
+        e.preventDefault();
         moveEndX = e.originalEvent.changedTouches[0].pageX
         moveEndY = e.originalEvent.changedTouches[0].pageY
         X = moveEndX - startX
